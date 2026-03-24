@@ -1,9 +1,14 @@
 # Name of the workflow.
 name: Deploy Sentinel Detection
 
-# Set to run when I action it.
+# Set to run only when a .json file is created or modified in the detections folder.
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'detections/**.json'
 
 # Runs on a Ubuntu VM.
 jobs:
@@ -34,6 +39,7 @@ jobs:
 
 # Deploys the detection.
       - name: Deploy detection
+        if: github.event_name == 'workflow_dispatch'
         run: |
           for file in detections/*.json; do
             echo "Deploying $file"
