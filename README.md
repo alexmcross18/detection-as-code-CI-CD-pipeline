@@ -12,7 +12,11 @@ YAML files used to push resources to Azure.
 
 ### detection-as-code-CI/CD-pipeline/detections
 
-ARM templates of Sentinel analytics.
+ARM templates of Sentinel analytics. Currently contains the following detections:
+
+- Unauthorised Web Browsers (Defence Evasion)
+- Bunny Loader Malware (Execution)
+- Emails with Suspicious TLD's (Initial Access)
 
 ## How it works (Analytic deployment)
 
