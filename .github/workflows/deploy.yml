@@ -1,1 +1,21 @@
+on: [push]
 
+name: Run Azure Login With a Service Principal Secret
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: azure/login@v3
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        enable-AzPSSession: true
+
+    - name: Azure PowerShell script
+      uses: azure/powershell@v3
+      with:
+        azPSVersion: "latest"
+        inlineScript: |
+          Get-AzWebApp
