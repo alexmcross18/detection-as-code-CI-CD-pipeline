@@ -24,15 +24,21 @@ jobs:
 # Validates that the resource group and workspace is there and validates that there aren't any issues with the json file.
       - name: Validate template
         run: |
-          az deployment group validate \
-          --resource-group sentinelrg \
-          --template-file detections/1.json \
-          --parameters workspace=lawSentinel
+          for file in detections/*.json; do
+            echo "Validating $file"
+            az deployment group validate \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+            --template-file "$file" \
+            --parameters workspace=${{ vars.AZURE_WORKSPACE }}
+          done
 
 # Deploys the detection.
       - name: Deploy detection
         run: |
-          az deployment group create \
-          --resource-group sentinelrg \
-          --template-file detections/1.json \
-          --parameters workspace=lawSentinel
+          for file in detections/*.json; do
+            echo "Deploying $file"
+            az deployment group create \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+            --template-file "$file" \
+            --parameters workspace=${{ vars.AZURE_WORKSPACE }}
+          done
