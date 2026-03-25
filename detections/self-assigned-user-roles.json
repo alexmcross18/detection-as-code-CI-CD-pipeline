@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/5e401a08-a897-4de2-8315-f558509dc1df')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/5e401a08-a897-4de2-8315-f558509dc1df')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2023-12-01-preview",
+            "properties": {
+                "displayName": "self assigned role",
+                "description": "",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "AuditLogs\r\n// Filter on only successful results.\r\n| where Result == \"success\"\r\n// Filter on only the operation of adding a member to a role.\r\n| where OperationName == \"Add member to role\"\r\n// Pulls out the initiating users UPN into it's own row.\r\n| extend InitiatingUser = tostring(InitiatedBy.user.userPrincipalName)\r\n// Pulls out the target users UPN into it's own row.\r\n| extend TargetUser = tostring(TargetResources[0].userPrincipalName)\r\n// Pulls out the role name into it's own row.\r\n| extend RoleName = tostring(TargetResources[0].modifiedProperties[1].newValue)\r\n// Tunes for false positives in case the initiating user and target user fields fail to parse correctly and appear blank.\r\n| where isnotempty(InitiatingUser) and isnotempty(TargetUser)\r\n// Filters on only logs where the initiating user is the same as the target user.\r\n| where InitiatingUser == TargetUser\r\n// Projects relevant information.\r\n| project TimeGenerated, OperationName, InitiatingUser, TargetUser, Result, RoleName",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "PT6M",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "PrivilegeEscalation"
+                ],
+                "techniques": [
+                    "T1078"
+                ],
+                "subTechniques": [
+                    "T1078.004"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "InitiatingUser"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "AzureResource",
+                        "fieldMappings": [
+                            {
+                                "identifier": "ResourceId",
+                                "columnName": "RoleName"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        }
+    ]
+}
