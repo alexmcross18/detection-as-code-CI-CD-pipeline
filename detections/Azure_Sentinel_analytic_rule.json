@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/f5f28eec-ccf7-4e08-844f-c800d1d15689')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/f5f28eec-ccf7-4e08-844f-c800d1d15689')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2023-12-01-preview",
+            "properties": {
+                "displayName": "locations",
+                "description": "",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "// Define a list of known/approved country codes from the Sentinel watchlist \"knownLocations\".\r\nlet knownLocations = (_GetWatchlist('knownLocations') | project CountryCode);\r\n// Build a lookup of each user's last successful sign-in from a known location in the last 30 days.\r\nlet lastKnownLocation = SigninLogs\r\n| where ResultSignature == \"SUCCESS\"\r\n| where Location in (knownLocations)\r\n| where TimeGenerated > ago(30d)\r\n| summarize LastKnownSignInTime = max(TimeGenerated) by UserPrincipalName, LastKnownLocation = Location;\r\nSigninLogs\r\n// Only include sign-ins from locations NOT in the known locations watchlist.\r\n| where Location !in (knownLocations)\r\n// Only include successful sign-ins.\r\n| where ResultSignature == \"SUCCESS\"\r\n// Return only the relevant columns.\r\n| project\r\n    TimeGenerated,\r\n    Identity,\r\n    UserDisplayName,\r\n    UserPrincipalName,\r\n    UserType,\r\n    Location,\r\n    AppDisplayName,\r\n    AuthenticationRequirement,\r\n    ClientAppUsed,\r\n    ConditionalAccessStatus,\r\n    IsInteractive,\r\n    IPAddress,\r\n    LocationDetails",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "PT6M",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "InitialAccess"
+                ],
+                "techniques": [
+                    "T1078"
+                ],
+                "subTechniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        }
+    ]
+}
