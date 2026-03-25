@@ -147,7 +147,7 @@
                     "then": {
                         // References the policy parameter (not the ARM parameter).
                         // This is what makes the effect configurable per assignment.
-                        "effect": "[parameters('effect')]"
+                        "effect": "[[parameters('effect')]"
                     }
                 }
             }
