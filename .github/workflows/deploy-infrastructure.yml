@@ -1,0 +1,33 @@
+name: Deploy Azure Infrastructure
+
+on: 
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+        paths:
+            - 'infrastructure/**.json'
+
+jobs:
+    deploy:
+      runs-on:
+          - ubuntu-latest
+
+      steps:
+          - name: Checkout Repo
+            uses: actions/checkout@v4
+            
+          - name: Login to Azure
+            uses: azure/login@v3
+            with:
+                creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+          - name: Deploy LAW
+            if: github.event_name == 'workflow_dispatch'
+            run: |
+              for file in infrastructure/*.json; do
+                echo "Deploying $file"
+                az deployment group create \
+                --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+                --template-file "$file" \
+              done
