@@ -40,12 +40,8 @@ resource sentinelOnboarding 'Microsoft.SecurityInsights/onboardingStates@2025-09
   name: 'default'
   scope: law
   properties: {}
-  dependsOn: [
-    sentinel
-  ]
 }
 
 // Writes the output of what was created to the user.
 output workspaceId string = law.id
 output workspaceName string = law.name
-output sentinelName string = sentinel.name
