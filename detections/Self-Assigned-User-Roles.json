@@ -14,7 +14,7 @@
             "kind": "Scheduled",
             "apiVersion": "2023-12-01-preview",
             "properties": {
-                "displayName": "self assigned role",
+                "displayName": "User Self Assigned Role",
                 "description": "",
                 "severity": "Medium",
                 "enabled": true,
