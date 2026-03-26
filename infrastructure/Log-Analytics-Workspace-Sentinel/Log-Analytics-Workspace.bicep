@@ -35,21 +35,6 @@ resource law 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   }
 }
 
-// Below is creating a Sentinel instance.
-resource sentinel 'Microsoft.OperationsManagement/solutions@2015-11-01-preview' = {
-  name: 'SecurityInsights(${law.name})'               // Name of the Sentinel instance.
-  location: location                                  // Location/Region of the Sentinel instance.
-  properties: {
-    workspaceResourceId: law.id                       // ID of the Log Analytics Workspace it will pull logs from.
-  }
-  plan: {
-    name: 'SecurityInsights(${law.name})'
-    publisher: 'Microsoft'
-    product: 'OMSGallery/SecurityInsights'
-    promotionCode: ''
-  }
-}
-
 // Below is linking Sentinel to the Log Analytics Workspace.
 resource sentinelOnboarding 'Microsoft.SecurityInsights/onboardingStates@2025-09-01' = {
   name: 'default'
