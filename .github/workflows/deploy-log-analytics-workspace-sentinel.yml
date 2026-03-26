@@ -1,21 +1,19 @@
 name: Deploy Log Analytics Workspace and Sentinel
-
 on: 
     workflow_dispatch:
-    push:
-        branches:
-            - main
-        paths:
-            - 'infrastructure/Log-Analytics-Workspace-Sentinel/**.bicep'
+        inputs:
+            client:
+                description: 'Client to deploy to (must match GitHub Environment name)'
+                required: true
+                type: string
 
 jobs:
     deploy:
-      runs-on:
-          - ubuntu-latest
-
+      runs-on: ubuntu-latest
+      environment: ${{ inputs.client }}
       steps:
           - name: Checkout Repo
-            uses: actions/checkout@v6
+            uses: actions/checkout@v4
             
           - name: Login to Azure
             uses: azure/login@v3
@@ -23,11 +21,8 @@ jobs:
                 creds: ${{ secrets.AZURE_CREDENTIALS }}
 
           - name: Deploy LAW
-            if: github.event_name == 'workflow_dispatch'
             run: |
-              for file in infrastructure/Log-Analytics-Workspace-Sentinel/*.bicep; do
-                echo "Deploying $file"
-                az deployment group create \
-                --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
-                --template-file "$file"
-              done
+              az deployment group create \
+              --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+              --template-file infrastructure/Log-Analytics-Workspace-Sentinel/Log-Analytics-Workspace.bicep \
+              --parameters infrastructure/Log-Analytics-Workspace-Sentinel/parameters/${{ inputs.client }}.bicepparam
