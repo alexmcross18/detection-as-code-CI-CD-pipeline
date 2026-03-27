@@ -34,7 +34,7 @@
                     "createIncident": true,
                     "groupingConfiguration": {
                         "enabled": true,
-                        "reopenClosedIncident": false,
+                        "reopenClosedIncident": true,
                         "lookbackDuration": "PT4H",
                         "matchingMethod": "Selected",
                         "groupByEntities": [
