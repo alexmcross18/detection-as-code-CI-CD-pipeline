@@ -8,8 +8,8 @@
     },
     "resources": [
         {
-            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/', guid(parameters('workspace'), 'Sign-In-Unusual-Location'))]",
-            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/', guid(parameters('workspace'), 'Sign-In-Unusual-Location'))]",
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/',guid(parameters('workspace'), 'Sign-In-From-Unusual-Location'))]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',guid(parameters('workspace'), 'Sign-In-From-Unusual-Location'))]",
             "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
             "kind": "Scheduled",
             "apiVersion": "2023-12-01-preview",
@@ -19,8 +19,8 @@
                 "severity": "Medium",
                 "enabled": true,
                 "query": "// Define a list of known/approved country codes from the Sentinel watchlist \"knownLocations\".\r\nlet knownLocations = (_GetWatchlist('knownLocations') | project CountryCode);\r\n// Build a lookup of each user's last successful sign-in from a known location in the last 30 days.\r\nlet lastKnownLocation = SigninLogs\r\n| where ResultSignature == \"SUCCESS\"\r\n| where Location in (knownLocations)\r\n| where TimeGenerated > ago(30d)\r\n| summarize LastKnownSignInTime = max(TimeGenerated) by UserPrincipalName, LastKnownLocation = Location;\r\nSigninLogs\r\n// Only include sign-ins from locations NOT in the known locations watchlist.\r\n| where Location !in (knownLocations)\r\n// Only include successful sign-ins.\r\n| where ResultSignature == \"SUCCESS\"\r\n// Return only the relevant columns.\r\n| project\r\n    TimeGenerated,\r\n    Identity,\r\n    UserDisplayName,\r\n    UserPrincipalName,\r\n    UserType,\r\n    Location,\r\n    AppDisplayName,\r\n    AuthenticationRequirement,\r\n    ClientAppUsed,\r\n    ConditionalAccessStatus,\r\n    IsInteractive,\r\n    IPAddress,\r\n    LocationDetails",
-                "queryFrequency": "PT5M",
-                "queryPeriod": "PT6M",
+                "queryFrequency": "PT1H",
+                "queryPeriod": "PT1H5M",
                 "triggerOperator": "GreaterThan",
                 "triggerThreshold": 0,
                 "suppressionDuration": "PT5H",
@@ -37,11 +37,13 @@
                 "incidentConfiguration": {
                     "createIncident": true,
                     "groupingConfiguration": {
-                        "enabled": false,
+                        "enabled": true,
                         "reopenClosedIncident": false,
-                        "lookbackDuration": "PT5H",
-                        "matchingMethod": "AllEntities",
-                        "groupByEntities": [],
+                        "lookbackDuration": "PT4H",
+                        "matchingMethod": "Selected",
+                        "groupByEntities": [
+                            "Account"
+                        ],
                         "groupByAlertDetails": [],
                         "groupByCustomDetails": []
                     }
@@ -51,7 +53,17 @@
                 },
                 "alertDetailsOverride": null,
                 "customDetails": null,
-                "entityMappings": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "UserDisplayName"
+                            }
+                        ]
+                    }
+                ],
                 "sentinelEntitiesMappings": null,
                 "templateVersion": null
             }
