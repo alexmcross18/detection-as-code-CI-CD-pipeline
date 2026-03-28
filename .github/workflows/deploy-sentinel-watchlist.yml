@@ -32,13 +32,7 @@ jobs:
 
           - name: Deploy Watchlist
             run: |
-              az sentinel watchlist create \
+              az deployment group create \
                 --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
-                --workspace-name ${{ vars.AZURE_WORKSPACE }} \
-                --watchlist-alias knownLocations \
-                --display-name "Known Locations" \
-                --items-search-key CountryCode \
-                --provider Microsoft \
-                --source "known_signin_locations.csv" \
-                --raw-content @watchlists/known_signin_locations.csv \
-                --content-type "text/csv"
+                --template-file watchlists/knownLocations.bicep \
+                --parameters workspaceName=${{ vars.AZURE_WORKSPACE }}
