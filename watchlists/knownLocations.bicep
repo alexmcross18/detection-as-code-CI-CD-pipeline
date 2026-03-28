@@ -2,7 +2,7 @@ param watchlistAlias string = 'knownLocations'
 param csvContent string = ''
 param workspaceName string
 
-resource workspace 'Microsoft.OperationalInsights/workspaces@2023-02-01' existing = {
+resource workspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
   name: workspaceName
 }
 
