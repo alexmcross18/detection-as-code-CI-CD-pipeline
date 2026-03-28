@@ -1,7 +1,10 @@
-resource knownLocations 'Microsoft.SecurityInsights/watchlists@2025-09-01' = {
-  name: knownLocations
+param watchlistAlias string = 'knownLocations'
+param csvContent string = ''
+
+resource knownLocations 'Microsoft.SecurityInsights/watchlists@2023-09-01' = {
+  name: watchlistAlias
   properties: {
-    displayName: 'knownLocations'
+    displayName: 'Known Locations'
     itemsSearchKey: 'CountryCode'
     provider: 'Microsoft'
     source: 'Local file'
