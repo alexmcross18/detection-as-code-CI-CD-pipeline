@@ -42,7 +42,7 @@ jobs:
           - name: Deploy Watchlist
             run: |
               # Read CSV file.
-              CSV_CONTENT=$(cat watchlists/knownLocations.csv)
+              CSV_CONTENT=$(cat watchlists/known_signin_locations.csv)
               az deployment group create \
               --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
               --template-file watchlists/knownLocations.bicep \
