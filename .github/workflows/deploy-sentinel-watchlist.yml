@@ -39,7 +39,6 @@ jobs:
                 --display-name "Known Locations" \
                 --items-search-key CountryCode \
                 --provider Microsoft \
-                --source-type "LocalFile" \
                 --source "known_signin_locations.csv" \
                 --raw-content @watchlists/known_signin_locations.csv \
                 --content-type "text/csv"
