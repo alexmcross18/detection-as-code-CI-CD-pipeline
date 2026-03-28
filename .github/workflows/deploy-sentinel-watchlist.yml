@@ -41,6 +41,10 @@ jobs:
           # Deploys the Log Analytics Workspace and Sentinel instance.
           - name: Deploy Watchlist
             run: |
+              # Read CSV file.
+              CSV_CONTENT=$(cat watchlists/knownLocations.csv)
               az deployment group create \
               --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
-              --template-file watchlists/knownLocations.bicep
+              --template-file watchlists/knownLocations.bicep \
+              --parameters watchlistAlias='knownLocations' \
+                  csvContent="$CSV_CONTENT"
