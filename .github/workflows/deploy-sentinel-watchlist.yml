@@ -38,12 +38,6 @@ jobs:
               tenant-id: ${{ vars.AZURE_TENANT_ID }}
               subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-          # Install the relevant extensions.
-          - name: Install Azure Sentinel CLI Extension
-            run: |
-              az extension add --name sentinel
-              az extension add --name watchlist
-
           # Deploys the Log Analytics Workspace and Sentinel instance.
           - name: Deploy Watchlist
             run: |
@@ -54,6 +48,6 @@ jobs:
                 --display-name "Known Locations" \
                 --items-search-key CountryCode \
                 --provider Microsoft \
-                --source "Local file" \
+                --source "known_signin_locations.csv" \
                 --raw-content @watchlists/known_signin_locations.csv \
                 --content-type "text/csv"
