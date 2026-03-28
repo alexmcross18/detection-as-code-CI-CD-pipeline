@@ -1,7 +1,7 @@
 param watchlistAlias string = 'knownLocations'
 param csvContent string = ''
 
-resource knownLocations 'Microsoft.SecurityInsights/watchlists@2023-09-01' = {
+resource knownLocations 'Microsoft.SecurityInsights/watchlists@2023-09-01-preview' = {
   name: watchlistAlias
   properties: {
     displayName: 'Known Locations'
