@@ -1,5 +1,4 @@
 param watchlistAlias string = 'knownLocations'
-param csvContent string = ''
 param workspaceName string
 
 resource workspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
@@ -13,8 +12,8 @@ resource knownLocations 'Microsoft.SecurityInsights/watchlists@2023-09-01-previe
     displayName: 'Known Locations'
     itemsSearchKey: 'CountryCode'
     provider: 'Microsoft'
-    source: 'Local file'
-    rawContent: csvContent
+    source: 'known_signin_locations.csv'
+    rawContent: loadTextContent('known_signin_locations.csv')
     contentType: 'text/csv'
   }
 }
