@@ -1,5 +1,5 @@
 terraform {
-  backend "remote" {
+  cloud {
     organization = "GitHub-LAW-SENTINEL"
 
     workspaces {
